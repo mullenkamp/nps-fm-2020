@@ -12,40 +12,24 @@ import pandas as pd
 import geopandas as gpd
 import nzrec
 
+import params
+
 pd.options.display.max_columns = 10
 
 
 #######################################################
 ### Parameters
 
-data_path = pathlib.Path('/media/nvme1/Projects/aquanet/Greater Wellington Eastern Wairarapa/data')
+way_id = 3133749
 
-rec_mapping_csv = '/media/nvme1/data/NIWA/REC25_rivers/rec2_to_rec1_mapping.csv'
+nzrec_data_path = '/home/mike/git/nzrec/data'
 
-river_reaches_path = data_path.joinpath('river_reaches_all_order.gpkg')
-river_catches_path = data_path.joinpath('river_catchments.gpkg')
-
-nzrec_data_path = '/media/nvme1/git/nzrec/data'
-
-## Conc data
-mfe_data_path = pathlib.Path('/media/nvme1/data/mfe')
-
-base_cols = ['measr_b', 'measure', 'units', 'nzsgmnt', 'strm_rd', 'value', 'mesrmnt', 'climate', 'src_f_f']
-main_cols = ['measr_b', 'units', 'nzsgmnt', 'value', 'mesrmnt']
-
-# nitrogen_csv = 'river-water-quality-nitrogen-modelled-2016-2020.csv'
-# phos_csv = 'river-water-quality-phosphorus-modelled-2016-2020.csv'
-# turb_csv = 'river-water-quality-clarity-and-turbidity-modelled-2016-2020.csv'
-# ecoli_csv = 'river-water-quality-escherichia-coli-modelled-2016-2020.csv'
-# macro_csv = 'river-water-quality-macroinvertebrate-community-index-modell.csv'
-# fish_csv = 'fish-index-of-biotic-integrity-1998-2018.csv'
-sed_csv = 'sediment-classes-for-rec24-nzsegments.csv.zip'
-# dep_sed_csv = 'deposited-sediment-in-rivers-2014-2019.csv'
-# dep_sed_csv = 'predicted-reference-and-current-streambed-deposited-fine-sed.csv'
+## Extra data
+sed_csv = 'sediment-classes-for-rec24-nzsegments.csv'
 
 ## Output
 # agg_conc_csv = 'wairarapa_stream_data.csv'
-# agg_conc_feather = 'river_data.feather'
+agg_conc_feather = 'river_data.feather'
 
 #####################################################
 ### Processing
@@ -105,9 +89,9 @@ sed0['Deposited_4_class'] = sed0['Deposited_4_class'].astype('int8')
 # sed1 = pd.merge(reaches_df, sed0, on='nzsegment')
 
 ## deposited sediment
-# sed1 = pd.read_csv(mfe_data_path.joinpath(dep_sed_csv), usecols=['NZREACH', 'BRT_ALL_O'])
-# sed1 = sed1.rename(columns={'NZREACH': 'rec1_nzsegment', 'BRT_ALL_O': 'dep_sed_cover'}).dropna()
-# sed1 = pd.merge(rec_map0, sed1, on='rec1_nzsegment').drop('rec1_nzsegment', axis=1)
+sed1 = pd.read_csv(mfe_data_path.joinpath(dep_sed_csv), usecols=['NZREACH', 'BRT_ALL_O'])
+sed1 = sed1.rename(columns={'NZREACH': 'rec1_nzsegment', 'BRT_ALL_O': 'dep_sed_cover'}).dropna()
+sed1 = pd.merge(rec_map0, sed1, on='rec1_nzsegment').drop('rec1_nzsegment', axis=1)
 
 ### Already available in nzrec
 w0 = nzrec.Water(nzrec_data_path)
