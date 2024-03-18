@@ -15,9 +15,8 @@ from npsfm import NPSFM
 ### Parameters
 
 script_path = pathlib.Path(os.path.realpath(os.path.dirname(__file__)))
-base_path = script_path.parent.joinpath('data')
+data_path = script_path.parent.parent.joinpath('data')
 
-package_data_path = '/home/mike/git/nps-fm-2020/data'
 
 ########################################################
 ### Test
@@ -30,12 +29,11 @@ feature = 'river'
 version = 'v202401'
 state = 'A'
 
-mod = NPSFM(package_data_path)
+mod = NPSFM(data_path)
 self = mod.add_data(ts_data, parameter, feature, nzsegment)
 attr_state = self.calc_state()
 
 improve_ratio1 = self.calc_improvement_to_state('A')
-
 improve_ratio2 = self.calc_improvement_to_bottom_line()
 
 

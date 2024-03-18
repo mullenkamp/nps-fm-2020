@@ -28,7 +28,7 @@ way_id = 3133749
 nzrec_data_path = '/home/mike/git/nzrec/data'
 
 ## Extra data
-sed_csv = 'sediment-classes-for-rec24-nzsegments.csv'
+sed_csv = 'sediment-classes-for-rec24-nzsegments.csv.zip'
 
 ## Output
 # agg_conc_csv = 'wairarapa_stream_data.csv'
