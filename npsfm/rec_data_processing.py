@@ -11,6 +11,7 @@ import pathlib
 import pandas as pd
 import geopandas as gpd
 import nzrec
+import booklet
 
 import params
 
@@ -19,6 +20,8 @@ pd.options.display.max_columns = 10
 
 #######################################################
 ### Parameters
+
+data_path = pathlib.Path(os.path.join(os.path.split(os.path.realpath(os.path.dirname(__file__)))[0], 'data'))
 
 way_id = 3133749
 
@@ -29,115 +32,54 @@ sed_csv = 'sediment-classes-for-rec24-nzsegments.csv'
 
 ## Output
 # agg_conc_csv = 'wairarapa_stream_data.csv'
-agg_conc_feather = 'river_data.feather'
+# agg_conc_feather = 'river_data.feather'
+
+rec_classes_blt_path = data_path.joinpath('rec_classes.blt')
+
+
 
 #####################################################
 ### Processing
 
-## Get the necessary reaches
-# geo1 = gpd.read_file(river_reaches_path, include_fields=['nzsegment', 'catchment_name'])
-# geo1['segment_length'] = geo1.geometry.length.round().astype('int32')
-# reaches_df = pd.DataFrame(geo1.drop('geometry', axis=1))
+rec_tags = {}
 
-## nitrogen
-# n0 = pd.read_csv(mfe_data_path.joinpath(nitrogen_csv), usecols=main_cols)
-# n0 = n0.rename(columns={'measr_b': 'measurement', 'nzsgmnt': 'nzsegment', 'mesrmnt': 'mtype'})
-
-# n1 = pd.merge(reaches_df, n0, on='nzsegment')
-
-## phosphorus
-# phos0 = pd.read_csv(mfe_data_path.joinpath(phos_csv), usecols=main_cols)
-# phos0 = phos0.rename(columns={'measr_b': 'measurement', 'nzsgmnt': 'nzsegment', 'mesrmnt': 'mtype'})
-
-# phos1 = pd.merge(reaches_df, phos0, on='nzsegment')
-
-## turbidity
-# turb0 = pd.read_csv(mfe_data_path.joinpath(turb_csv), usecols=main_cols)
-# turb0 = turb0.rename(columns={'measr_b': 'measurement', 'nzsgmnt': 'nzsegment', 'mesrmnt': 'mtype'})
-
-# turb1 = pd.merge(reaches_df, turb0, on='nzsegment')
-
-## e.coli
-# ecoli0 = pd.read_csv(mfe_data_path.joinpath(ecoli_csv), usecols=main_cols)
-# ecoli0 = ecoli0.rename(columns={'measr_b': 'measurement', 'nzsgmnt': 'nzsegment', 'mesrmnt': 'mtype'})
-
-# ecoli1 = pd.merge(reaches_df, ecoli0, on='nzsegment')
-
-## macro
-# macro0 = pd.read_csv(mfe_data_path.joinpath(macro_csv), usecols=main_cols)
-# macro0 = macro0.rename(columns={'measr_b': 'measurement', 'nzsgmnt': 'nzsegment', 'mesrmnt': 'mtype'})
-
-# macro1 = pd.merge(reaches_df, macro0, on='nzsegment')
-
-## fish
-fish0 = pd.read_csv(mfe_data_path.joinpath(fish_csv), usecols=['nzreach', 'ibi_score'])
-fish0 = fish0.rename(columns={'nzreach': 'rec1_nzsegment'}).dropna()
-
-rec_map0 = pd.read_csv(rec_mapping_csv).drop_duplicates(subset=['rec1_nzsegment'])
-fish1 = pd.merge(rec_map0, fish0, on='rec1_nzsegment').drop('rec1_nzsegment', axis=1)
-
-# fish1 = pd.merge(reaches_df, fish0, on='nzsegment')
-
-## sediment classes
-sed0 = pd.read_csv(mfe_data_path.joinpath(sed_csv), usecols=['nzsegment', 'AmmendedCSOFG', 'Deposited_4_class', 'Suspended_4_class'])
-sed0 = sed0.replace({'Deposited_4_class': {'naturally soft-bottomed': 0}})
-# sed0.to_csv(mfe_data_path.joinpath(sed_csv), index=False)
-# sed0 = sed0.rename(columns={'measr_b': 'measurement', 'nzsgmnt': 'nzsegment', 'mesrmnt': 'mtype'})
-sed0['Suspended_4_class'] = sed0['Suspended_4_class'].astype('int8')
-sed0['Deposited_4_class'] = sed0['Deposited_4_class'].astype('int8')
-
-# sed1 = pd.merge(reaches_df, sed0, on='nzsegment')
-
-## deposited sediment
-sed1 = pd.read_csv(mfe_data_path.joinpath(dep_sed_csv), usecols=['NZREACH', 'BRT_ALL_O'])
-sed1 = sed1.rename(columns={'NZREACH': 'rec1_nzsegment', 'BRT_ALL_O': 'dep_sed_cover'}).dropna()
-sed1 = pd.merge(rec_map0, sed1, on='rec1_nzsegment').drop('rec1_nzsegment', axis=1)
-
-### Already available in nzrec
 w0 = nzrec.Water(nzrec_data_path)
 
-# reach_tags = {way_id: w0._way_tag[way_id] for way_id in reaches_df.nzsegment.unique()}
 
-reaches_list = []
-for seg, reaches in w0._way_tag.items():
-    r1 = pd.DataFrame.from_dict([reaches])
-    r1['nzsegment'] = seg
-    reaches_list.append(r1)
+# tags = w0._way_tag[way_id]
 
-reaches_data = pd.concat(reaches_list).drop('Catchment name', axis=1)
-reaches_data1 = pd.merge(reaches_df, reaches_data, on='nzsegment')
-reaches_data1 = pd.merge(reaches_data1, sed0, on='nzsegment')
-reaches_data1 = pd.merge(reaches_data1, fish1, on='nzsegment', how='left')
-reaches_data1 = pd.merge(reaches_data1, sed1, on='nzsegment', how='left')
+for way_id, tags in w0._way_tag.items():
 
-reaches_data1['nzsegment'] = reaches_data1['nzsegment'].astype('int32')
-# reaches_data1['end_seg'] = reaches_data1['end_seg'].astype('int32')
+    ## Periphyton classes
+    climate = tags['Climate class']
+    geology = tags['Geology class']
 
-reaches_data1.to_csv(data_path.joinpath(agg_conc_csv), index=False)
-reaches_data1.to_feather(data_path.joinpath(agg_conc_feather))
+    if (climate in ('WD', 'CD')) and (geology in ('SS', 'VA', 'VB')):
+        peri_class = 2
+    else:
+        peri_class = 1
 
+    rec_tags[way_id] = {'peri_class': peri_class}
 
+    ## SS class
+    ss_class = tags['Suspended_4_class']
+    if (ss_class is None):
+        ss_class = 1
+    rec_tags[way_id].update({'ss_class': ss_class})
 
+    ## deposited sediment class
+    ds_class = tags['Deposited_4_class']
+    if (ds_class is None) or (ds_class == 'naturally soft-bottomed'):
+        ds_class = 0
+    rec_tags[way_id].update({'ds_class': ds_class})
 
-########################################################
-### REC network
+### Save results
+data_path.mkdir(parents=True, exist_ok=True)
 
-rec_rivers_shp = '/media/data01/data/niwa/rec/rec25_rivers_clean.shp'
-rec_rivers_fgb = '/media/data01/data/niwa/rec/rec25_rivers_clean.fgb'
-rec_rivers_feather = '/media/data01/data/niwa/rec/rec25_rivers_clean.feather'
+with booklet.open(rec_classes_blt_path, 'n', key_serializer='uint4', value_serializer='msgpack', n_buckets=6000011) as f:
+    f.update(rec_tags)
 
-
-rec_rivers0 = gpd.read_file(rec_rivers_shp)
-rec_rivers0.rename(columns={'stream_ord': 'stream_order'}, inplace=True)
-
-rec_rivers0.to_file(rec_rivers_fgb, driver='FlatGeobuf')
-
-b1 = io.BytesIO()
-rec_rivers0.to_file(b1, driver='FlatGeobuf')
-
-rr0 = gpd.read_file(b1, engine='fiona', driver='FlatGeobuf')
-rr0 = gpd.read_feather(rec_rivers_feather)
-
+w0.close()
 
 
 

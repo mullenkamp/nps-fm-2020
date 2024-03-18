@@ -13,10 +13,14 @@ Created on Mon Apr 17 16:36:04 2023
 
 # Rivers
 river_chla_limits = {
-                'A': {'Q92': (-1, 50), 'Q83': (-1, 50)},
-                'B': {'Q92': (-1, 120), 'Q83': (-1, 120)},
-                'C': {'Q92': (-1, 200), 'Q83': (-1, 200)},
-                'D': {'Q92': (-1, 100000), 'Q83': (-1, 100000)}
+                'A': {1: {'Q92': (-1, 50)},
+                      2: {'Q83': (-1, 50)}},
+                'B': {1: {'Q92': (-1, 120)},
+                      2: {'Q83': (-1, 120)}},
+                'C': {1: {'Q92': (-1, 200)},
+                      2: {'Q83': (-1, 200)}},
+                'D': {1: {'Q92': (-1, 100000)},
+                      2: {'Q83': (-1, 100000)}}
                 }
 
 river_ammonia_limits = {
@@ -83,32 +87,40 @@ river_drp_limits = {
                 }
 
 river_clarity_limits = {
-                'A': {1: (1.78, 100000), 2: (0.93, 100000),
-                      3: (2.95, 100000), 4: (1.38, 100000)},
-                'B': {1: (1.55, 100000), 2: (0.76, 100000),
-                      3: (2.57, 100000), 4: (1.17, 100000)},
-                'C': {1: (1.34, 100000), 2: (0.61, 100000),
-                      3: (2.22, 100000), 4: (0.98, 100000)},
-                'D': {1: (-1, 100000), 2: (-1, 100000),
-                      3: (-1, 100000), 4: (-1, 100000)}
+                'A': {1: {'median': (1.78, 100000)},
+                      2: {'median': (0.93, 100000)},
+                      3: {'median': (2.95, 100000)},
+                      4: {'median': (1.38, 100000)}},
+                'B': {1: {'median': (1.55, 100000)},
+                      2: {'median': (0.76, 100000)},
+                      3: {'median': (2.57, 100000)},
+                      4: {'median': (1.17, 100000)}},
+                'C': {1: {'median': (1.34, 100000)},
+                      2: {'median': (0.61, 100000)},
+                      3: {'median': (2.22, 100000)},
+                      4: {'median': (0.98, 100000)}},
+                'D': {1: {'median': (-1, 100000)},
+                      2: {'median': (-1, 100000)},
+                      3: {'median': (-1, 100000)},
+                      4: {'median': (-1, 100000)}}
                 }
 
 river_dep_sed_limits = {
-                'A': {1: (-1, 7), 2: (-1, 10),
-                      3: (-1, 9), 4: (-1, 13)},
-                'B': {1: (-1, 14), 2: (-1, 19),
-                      3: (-1, 18), 4: (-1, 19)},
-                'C': {1: (-1, 21), 2: (-1, 29),
-                      3: (-1, 27), 4: (-1, 27)},
-                'D': {1: (-1, 100000), 2: (-1, 100000),
-                      3: (-1, 100000), 4: (-1, 100000)}
+                'A': {1: {'median': (-1, 7)}, 2: {'median': (-1, 10)},
+                      3: {'median': (-1, 9)}, 4: {'median': (-1, 13)}},
+                'B': {1: {'median': (-1, 14)}, 2: {'median': (-1, 19)},
+                      3: {'median': (-1, 18)}, 4: {'median': (-1, 19)}},
+                'C': {1: {'median': (-1, 21)}, 2: {'median': (-1, 29)},
+                      3: {'median': (-1, 27)}, 4: {'median': (-1, 27)}},
+                'D': {1: {'median': (-1, 100000)}, 2: {'median': (-1, 100000)},
+                      3: {'median': (-1, 100000)}, 4: {'median': (-1, 100000)}}
                 }
 
 river_fish_limits = {
-                'A': {'ibi_score': (34, 100000)},
-                'B': {'ibi_score': (28, 100000)},
-                'C': {'ibi_score': (18, 100000)},
-                'D': {'ibi_score': (-1, 100000)}
+                'A': {'mean': (34, 100000)},
+                'B': {'mean': (28, 100000)},
+                'C': {'mean': (18, 100000)},
+                'D': {'mean': (-1, 100000)}
                 }
 
 # Lakes
@@ -206,38 +218,62 @@ lake_cyano_limits = {
 
 
 # Combo
+# bottom_line_limits = {
+#     ('river', 'Ammonia'): {'median': (-1, 0.24),
+#                            'Q95': (-1, 0.40)},
+#     ('river', 'Nitrate'): {'median': (-1, 2.4),
+#                            'Q95': (-1, 3.5)},
+#     ('river', 'MCI'): {'mean': (90, 100000)},
+#     ('river', 'Clarity'): {1: {'median': (1.34, 100000)},
+#                            2: {'median': (0.61, 100000)},
+#                            3: {'median': (2.22, 100000)},
+#                            4: {'median': (0.98, 100000)}
+#                            },
+#     ('river', 'Dep Sediment'): {1: {'median': (-1, 21)},
+#                                 2: {'median': (-1, 29)},
+#                                 3: {'median': (-1, 27)},
+#                                 4: {'median': (-1, 27)}
+#                                 },
+#     ('river', 'Chla'): {1: {'Q92': (-1, 200)},
+#                         2: {'Q83': (-1, 200)}
+#                         },
+#     ('lake', 'Ammonia'): {'median': (-1, 0.24),
+#                           'Q95': (-1, 0.40)},
+#     ('lake', 'Cyano'): {
+#         'Q80': (-1, 10),
+#         },
+#     ('lake', 'Chla'): {
+#         'median': (-1, 12),
+#         'max': (-1, 60)
+#         },
+#     ('lake', 'Total nitrogen'): {
+#         True: (-1, 750),
+#         False: (-1, 800),
+#         },
+#     ('lake', 'Total phosphorus'): {'median': (-1, 50)},
+#     }
+
+
 bottom_line_limits = {
-    ('river', 'Ammonia'): {'median': (-1, 0.24),
-                           'Q95': (-1, 0.40)},
-    ('river', 'Nitrate'): {'median': (-1, 2.4),
-                'Q95': (-1, 3.5)},
-    ('river', 'MCI'): {'mean': (90, 100000)},
-    ('river', 'Clarity'): {1: (1.34, 100000), 2: (0.61, 100000),
-                3: (2.22, 100000), 4: (0.98, 100000)},
-    ('river', 'Dep Sediment'): {1: (-1, 21), 2: (-1, 29),
-                     3: (-1, 27), 4: (-1, 27)},
-    ('lake', 'Ammonia'): {'median': (-1, 0.24),
-                          'Q95': (-1, 0.40)},
-    ('lake', 'Cyano'): {
-        'Q80': (-1, 10),
-        },
-    ('lake', 'Chla'): {
-        'median': (-1, 12),
-        'max': (-1, 60)
-        },
-    ('lake', 'Total nitrogen'): {
-        True: (-1, 750),
-        False: (-1, 800),
-        },
-    ('lake', 'Total phosphorus'): {'median': (-1, 50)},
+    ('river', 'Ammonia'): 'B',
+    ('river', 'Nitrate'): 'B',
+    ('river', 'MCI'): 'C',
+    ('river', 'Clarity'): 'C',
+    ('river', 'Dep Sediment'): 'C',
+    ('river', 'Chla'): 'C',
+    ('lake', 'Ammonia'): 'B',
+    ('lake', 'Cyano'): 'C',
+    ('lake', 'Chla'):'C',
+    ('lake', 'Total nitrogen'): 'C',
+    ('lake', 'Total phosphorus'): 'C',
     }
 
 
 parameter_special_cols_dict = {
-    ('river', 'Clarity'): ['Suspended_4_class'],
-    ('river', 'Dep Sediment'): ['Deposited_4_class'],
-    ('river', 'Chla'): ['Climate class', 'Geology class'],
-    ('lake', 'Total nitrogen'): ['stratified'],
+    ('river', 'Clarity'): 'ss_class',
+    ('river', 'Dep Sediment'): 'ds_class',
+    ('river', 'Chla'): 'peri_class',
+    # ('lake', 'Total nitrogen'): 'stratified',
     }
 
 parameter_limits_dict = {
@@ -250,12 +286,12 @@ parameter_limits_dict = {
     ('river', 'DRP'): river_drp_limits,
     ('river', 'Dep Sediment'): river_dep_sed_limits,
     ('river', 'Fish IBI'): river_fish_limits,
-    ('lake', 'Ammonia'): lake_ammonia_limits,
-    ('lake', 'Cyano'): lake_cyano_limits,
-    ('lake', 'Chla'): lake_chla_limits,
-    ('lake', 'Total nitrogen'): lake_tn_limits,
-    ('lake', 'Total phosphorus'): lake_tp_limits,
-    ('lake', 'E.coli'): lake_ecoli_limits,
+    # ('lake', 'Ammonia'): lake_ammonia_limits,
+    # ('lake', 'Cyano'): lake_cyano_limits,
+    # ('lake', 'Chla'): lake_chla_limits,
+    # ('lake', 'Total nitrogen'): lake_tn_limits,
+    # ('lake', 'Total phosphorus'): lake_tp_limits,
+    # ('lake', 'E.coli'): lake_ecoli_limits,
     }
 
 
