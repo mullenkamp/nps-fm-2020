@@ -10,7 +10,7 @@ classifiers = [
     "Programming Language :: Python :: 3 :: Only",
 ]
 requires-python = ">=3.10"
-dependencies = ['booklet>0.1', 'pandas', 'smart_open'
+dependencies = ['booklet>0.1', 'pandas', 'smart_open', 'msgpack'
 ]
 
 # [tool.ruff]

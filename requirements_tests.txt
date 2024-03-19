@@ -1,3 +1,4 @@
 booklet>0.1
 pandas
 smart_open[http]
+msgpack
