@@ -30,7 +30,7 @@ hopeful_band = 'A'
 ts_data = pd.read_csv(script_path.joinpath('test_data1.csv.zip'), index_col=0, parse_dates=True)['value']
 
 
-self = NPSFM(data_path)
+self = NPSFM(data_path, download_files=True)
 
 
 def test_add_limits():
