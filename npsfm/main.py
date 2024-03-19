@@ -97,15 +97,11 @@ class NPSFM:
         ## Run checks to see what parameters are available to calc grades
 
 
-    def add_data(self, ts_data, parameter, feature, nzsegment):
+    def add_limits(self, parameter, feature, nzsegment):
         """
 
         """
         ## Checks
-        if not isinstance(ts_data, pd.Series):
-            raise TypeError('ts_data must be a pandas Series with a datetime index.')
-        if not isinstance(ts_data.index, pd.DatetimeIndex):
-            raise TypeError('ts_data must be a pandas Series with a datetime index.')
         feature_parameter = (feature, parameter)
         if feature_parameter not in v202401.parameter_limits_dict:
             raise ValueError(f'The combo of {feature_parameter} must be one of {list(v202401.parameter_limits_dict.keys())}')
@@ -115,6 +111,11 @@ class NPSFM:
             else:
                 tags = f[nzsegment]
 
+        ## Remove old ts_data and stats if they exists
+        if hasattr(self, 'ts_data'):
+            delattr(self, 'ts_data')
+            delattr(self, 'stats')
+
         ## Determine the associated limits for the site and parameter
         limits = utils.get_limits(feature_parameter, tags)
 
@@ -122,7 +123,6 @@ class NPSFM:
         bl_limit = limits[bl_limit_state]
 
         ## Save data
-        self.ts_data = ts_data
         self.parameter = parameter
         self.feature = feature
         self.feature_parameter = feature_parameter
@@ -131,16 +131,33 @@ class NPSFM:
         self.bottom_line_limit_state = bl_limit_state
         self.bottom_line_limit = bl_limit
         self.limits = limits
-        self.stats = utils.calc_stats(ts_data, limits)
 
-        return copy(self)
+        return limits
 
 
-    def calc_state(self):
+    def add_stats(self, ts_data):
         """
 
         """
-        result = utils.calc_state_from_limit(self.stats, self.limits)
+        ## Checks
+        if not hasattr(self, 'limits'):
+            raise ValueError('You must run the add_limits method first.')
+        if not isinstance(ts_data, pd.Series):
+            raise TypeError('ts_data must be a pandas Series with a datetime index.')
+        if not isinstance(ts_data.index, pd.DatetimeIndex):
+            raise TypeError('ts_data must be a pandas Series with a datetime index.')
+
+        ## Determine the stats
+        self.stats = utils.calc_stats(ts_data, self.limits)
+
+        return self.stats
+
+
+    def calc_state(self, only_median=False):
+        """
+
+        """
+        result = utils.calc_state_from_limit(self.stats, self.limits, only_median)
 
         return result
 

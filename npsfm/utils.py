@@ -30,7 +30,7 @@ file_dict = {
 ### Functions
 
 
-def calc_stat(ts_data, stat):
+def calc_stat(ts_data, stat, percentile_method='hazen'):
     """
 
     """
@@ -40,7 +40,7 @@ def calc_stat(ts_data, stat):
         value = ts_data.max()
     elif 'Q' in stat:
         percentile = int(stat[1:])
-        value = np.percentile(ts_data, percentile, method='hazen')
+        value = np.percentile(ts_data, percentile, method=percentile_method)
     elif 'G' in stat:
         conc = int(stat[1:])
         value = (ts_data > conc).sum()
@@ -57,7 +57,7 @@ def calc_stats(ts_data, limits):
     return stats
 
 
-def calc_state_from_limit(stats, limits):
+def calc_state_from_limit(stats, limits, only_median=False):
     """
 
     """
@@ -65,10 +65,18 @@ def calc_state_from_limit(stats, limits):
 
     for band, limit in reversed(limits.items()):
         bool_list = []
-        for stat_name, minmax in limit.items():
-            min1, max1 = minmax
-            bool0 = (stats[stat_name] > min1) & (stats[stat_name] <= max1)
-            bool_list.append(bool0)
+        if only_median:
+            if 'median' in limit:
+                min1, max1 = limit['median']
+                bool0 = (stats['median'] > min1) & (stats['median'] <= max1)
+                bool_list.append(bool0)
+            else:
+                raise ValueError('median not in limits.')
+        else:
+            for stat_name, minmax in limit.items():
+                min1, max1 = minmax
+                bool0 = (stats[stat_name] > min1) & (stats[stat_name] <= max1)
+                bool_list.append(bool0)
 
         if all(bool_list):
             state = band
