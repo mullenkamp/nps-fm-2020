@@ -22,7 +22,7 @@ nzsegment = 3076139
 parameter = 'Nitrate'
 feature = 'river'
 version = 'v202401'
-hopeful_state = 'A'
+hopeful_band = 'A'
 
 ########################################################
 ### Test
@@ -51,15 +51,15 @@ def test_add_stats():
 stats = self.add_stats(ts_data)
 
 
-def test_calc_state():
-    attr_state = self.calc_state(only_median=True)
-    attr_state = self.calc_state(only_median=False)
+def test_calc_band():
+    attr_band = self.calc_band(only_median=True)
+    attr_band = self.calc_band(only_median=False)
 
-    assert attr_state == 'C'
+    assert attr_band == 'C'
 
 
-def test_calc_improvement_to_state():
-    improve_ratio1 = self.calc_improvement_to_state(hopeful_state)
+def test_calc_improvement_to_band():
+    improve_ratio1 = self.calc_improvement_to_band(hopeful_band)
     improve_ratio2 = self.calc_improvement_to_bottom_line()
 
     assert (len(improve_ratio1) == 2) and len(improve_ratio2) == 2
