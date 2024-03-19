@@ -57,11 +57,11 @@ def calc_stats(ts_data, limits):
     return stats
 
 
-def calc_state_from_limit(stats, limits, only_median=False):
+def calc_band_from_limit(stats, limits, only_median=False):
     """
 
     """
-    state = None
+    new_band = None
 
     for band, limit in reversed(limits.items()):
         bool_list = []
@@ -79,9 +79,9 @@ def calc_state_from_limit(stats, limits, only_median=False):
                 bool_list.append(bool0)
 
         if all(bool_list):
-            state = band
+            new_band = band
 
-    return state
+    return new_band
 
 
 def get_limits(feature_parameter, tags):
@@ -107,18 +107,18 @@ def get_limits(feature_parameter, tags):
     return limits
 
 
-def calc_improvement_to_state(stats, limits, state):
+def calc_improvement_to_band(stats, limits, band):
     """
 
     """
-    current_state = calc_state_from_limit(stats, limits)
+    current_band = calc_band_from_limit(stats, limits)
 
-    if state >= current_state:
+    if band >= current_band:
         results = {stat: 0 for stat in stats}
     else:
-        state_limits = limits[state]
+        band_limits = limits[band]
         results = {}
-        for stat, limit in state_limits.items():
+        for stat, limit in band_limits.items():
             current_val = stats[stat]
             if limit[0] == -1:
                 ratio = round(1 - limit[1]/current_val, 4)

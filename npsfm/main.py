@@ -119,8 +119,8 @@ class NPSFM:
         ## Determine the associated limits for the site and parameter
         limits = utils.get_limits(feature_parameter, tags)
 
-        bl_limit_state = v202401.bottom_line_limits[feature_parameter]
-        bl_limit = limits[bl_limit_state]
+        bl_limit_band = v202401.bottom_line_limits[feature_parameter]
+        bl_limit = limits[bl_limit_band]
 
         ## Save data
         self.parameter = parameter
@@ -128,7 +128,7 @@ class NPSFM:
         self.feature_parameter = feature_parameter
         self.nzsegment = nzsegment
         self.class_tags = tags
-        self.bottom_line_limit_state = bl_limit_state
+        self.bottom_line_limit_band = bl_limit_band
         self.bottom_line_limit = bl_limit
         self.limits = limits
 
@@ -153,23 +153,23 @@ class NPSFM:
         return self.stats
 
 
-    def calc_state(self, only_median=False):
+    def calc_band(self, only_median=False):
         """
 
         """
-        result = utils.calc_state_from_limit(self.stats, self.limits, only_median)
+        result = utils.calc_band_from_limit(self.stats, self.limits, only_median)
 
         return result
 
 
-    def calc_improvement_to_state(self, state):
+    def calc_improvement_to_band(self, band):
         """
 
         """
-        if state not in self.limits:
-            raise ValueError(f'{state} not in the available states: {list(self.limits.keys())}')
+        if band not in self.limits:
+            raise ValueError(f'{band} not in the available bands: {list(self.limits.keys())}')
 
-        results = utils.calc_improvement_to_state(self.stats, self.limits, state)
+        results = utils.calc_improvement_to_band(self.stats, self.limits, band)
 
         return results
 
@@ -178,7 +178,7 @@ class NPSFM:
         """
 
         """
-        results = utils.calc_improvement_to_state(self.stats, self.limits, self.bottom_line_limit_state)
+        results = utils.calc_improvement_to_band(self.stats, self.limits, self.bottom_line_limit_band)
 
         return results
 
