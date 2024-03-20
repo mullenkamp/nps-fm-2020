@@ -34,12 +34,12 @@ self = NPSFM(data_path, download_files=True)
 
 
 def test_add_limits():
-    limits = self.add_limits(parameter, feature, nzsegment)
+    limits = self.add_limits(feature, parameter, nzsegment)
 
     assert len(limits) == 4
 
 
-limits = self.add_limits(parameter, feature, nzsegment)
+limits = self.add_limits(feature, parameter, nzsegment)
 
 
 def test_add_stats():
@@ -59,6 +59,9 @@ def test_calc_band():
 
 
 def test_calc_improvement_to_band():
+    improve_ratio1 = self.calc_improvement_to_band(hopeful_band, only_median=True)
+    improve_ratio2 = self.calc_improvement_to_bottom_line(only_median=True)
+
     improve_ratio1 = self.calc_improvement_to_band(hopeful_band)
     improve_ratio2 = self.calc_improvement_to_bottom_line()
 

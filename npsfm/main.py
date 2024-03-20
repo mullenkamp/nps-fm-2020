@@ -97,7 +97,7 @@ class NPSFM:
         ## Run checks to see what parameters are available to calc grades
 
 
-    def add_limits(self, parameter, feature, nzsegment):
+    def add_limits(self, feature, parameter, nzsegment):
         """
 
         """
@@ -162,23 +162,23 @@ class NPSFM:
         return result
 
 
-    def calc_improvement_to_band(self, band):
+    def calc_improvement_to_band(self, band, only_median=False):
         """
 
         """
         if band not in self.limits:
             raise ValueError(f'{band} not in the available bands: {list(self.limits.keys())}')
 
-        results = utils.calc_improvement_to_band(self.stats, self.limits, band)
+        results = utils.calc_improvement_to_band(self.stats, self.limits, band, only_median)
 
         return results
 
 
-    def calc_improvement_to_bottom_line(self):
+    def calc_improvement_to_bottom_line(self, only_median=False):
         """
 
         """
-        results = utils.calc_improvement_to_band(self.stats, self.limits, self.bottom_line_limit_band)
+        results = utils.calc_improvement_to_band(self.stats, self.limits, self.bottom_line_limit_band, only_median)
 
         return results
 

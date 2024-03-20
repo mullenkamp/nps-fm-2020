@@ -261,6 +261,8 @@ bottom_line_limits = {
     ('river', 'Clarity'): 'C',
     ('river', 'Dep Sediment'): 'C',
     ('river', 'Chla'): 'C',
+    ('river', 'DRP'): 'D',
+    ('river', 'E.coli'): 'E',
     ('lake', 'Ammonia'): 'B',
     ('lake', 'Cyano'): 'C',
     ('lake', 'Chla'):'C',

@@ -107,18 +107,20 @@ def get_limits(feature_parameter, tags):
     return limits
 
 
-def calc_improvement_to_band(stats, limits, band):
+def calc_improvement_to_band(stats, limits, band, only_median=False):
     """
 
     """
-    current_band = calc_band_from_limit(stats, limits)
+    current_band = calc_band_from_limit(stats, limits, only_median)
 
     if band >= current_band:
         results = {stat: 0 for stat in stats}
     else:
         band_limits = limits[band]
         results = {}
-        for stat, limit in band_limits.items():
+        if only_median:
+            stat = 'median'
+            limit = band_limits[stat]
             current_val = stats[stat]
             if limit[0] == -1:
                 ratio = round(1 - limit[1]/current_val, 4)
@@ -126,6 +128,15 @@ def calc_improvement_to_band(stats, limits, band):
                 ratio = round(limit[0]/current_val - 1, 4)
 
             results[stat] = ratio
+        else:
+            for stat, limit in band_limits.items():
+                current_val = stats[stat]
+                if limit[0] == -1:
+                    ratio = round(1 - limit[1]/current_val, 4)
+                else:
+                    ratio = round(limit[0]/current_val - 1, 4)
+
+                results[stat] = ratio
 
     return results
 
