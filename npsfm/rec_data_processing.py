@@ -21,7 +21,7 @@ pd.options.display.max_columns = 10
 #######################################################
 ### Parameters
 
-data_path = pathlib.Path(os.path.join(os.path.split(os.path.realpath(os.path.dirname(__file__)))[0], 'data'))
+# data_path = pathlib.Path(os.path.join(os.path.split(os.path.realpath(os.path.dirname(__file__)))[0], 'data'))
 
 way_id = 3133749
 
@@ -34,7 +34,7 @@ sed_csv = 'sediment-classes-for-rec24-nzsegments.csv.zip'
 # agg_conc_csv = 'wairarapa_stream_data.csv'
 # agg_conc_feather = 'river_data.feather'
 
-rec_classes_blt_path = data_path.joinpath('rec_classes.blt')
+rec_classes_blt_path = params.data_path.joinpath('rec_tags.blt')
 
 
 
@@ -74,7 +74,7 @@ for way_id, tags in w0._way_tag.items():
     rec_tags[way_id].update({'ds_class': ds_class})
 
 ### Save results
-data_path.mkdir(parents=True, exist_ok=True)
+# data_path.mkdir(parents=True, exist_ok=True)
 
 with booklet.open(rec_classes_blt_path, 'n', key_serializer='uint4', value_serializer='msgpack', n_buckets=6000011) as f:
     f.update(rec_tags)

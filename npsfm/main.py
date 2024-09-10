@@ -12,8 +12,8 @@ import numpy as np
 from copy import copy
 import booklet
 
-from . import v202401, utils
-# import v202401, utils
+# from . import v202401, utils
+import v202401, utils
 
 
 pd.options.display.max_columns = 10
@@ -97,7 +97,7 @@ class NPSFM:
         ## Run checks to see what parameters are available to calc grades
 
 
-    def add_limits(self, feature, parameter, nzsegment):
+    def add_limits(self, feature, parameter, nzsegment=None, lfenzid=None):
         """
 
         """
@@ -105,11 +105,21 @@ class NPSFM:
         feature_parameter = (feature, parameter)
         if feature_parameter not in v202401.parameter_limits_dict:
             raise ValueError(f'The combo of {feature_parameter} must be one of {list(v202401.parameter_limits_dict.keys())}')
-        with booklet.open(self.data_path.joinpath('rec_classes.blt')) as f:
-            if nzsegment not in f:
-                raise ValueError(f'{nzsegment} not a valid nzsegment.')
-            else:
-                tags = f[nzsegment]
+        if isinstance(nzsegment, int):
+            file_path = self.data_path.joinpath('rec_tags.blt')
+            tag_id = nzsegment
+        elif isinstance(lfenzid, int):
+            file_path = self.data_path.joinpath('lake_tags.blt')
+            tag_id = lfenzid
+        else:
+            tag_id = None
+            tags = None
+        if tag_id:
+            with booklet.open(file_path) as f:
+                if tag_id not in f:
+                    raise ValueError(f'{tag_id} not a valid id.')
+                else:
+                    tags = f[tag_id]
 
         ## Remove old ts_data and stats if they exists
         if hasattr(self, 'ts_data'):
@@ -126,7 +136,7 @@ class NPSFM:
         self.parameter = parameter
         self.feature = feature
         self.feature_parameter = feature_parameter
-        self.nzsegment = nzsegment
+        # self.nzsegment = nzsegment
         self.class_tags = tags
         self.bottom_line_limit_band = bl_limit_band
         self.bottom_line_limit = bl_limit

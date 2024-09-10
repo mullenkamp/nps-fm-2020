@@ -13,8 +13,8 @@ import concurrent.futures
 # import importlib
 from copy import copy
 
-from . import v202401
-# import v202401
+# from . import v202401
+import v202401
 
 so_http.DEFAULT_BUFFER_SIZE = 524288
 
@@ -22,7 +22,8 @@ so_http.DEFAULT_BUFFER_SIZE = 524288
 ### parameters
 
 file_dict = {
-             'rec_classes.blt': 'https://b2.tethys-ts.xyz/file/nz-rec/nps-fm-2020/rec_classes.blt',
+             'rec_tags.blt': 'https://b2.tethys-ts.xyz/file/nz-mfe/nps-fm-2020/rec_tags.blt',
+             'lake_tags.blt': 'https://b2.tethys-ts.xyz/file/nz-mfe/nps-fm-2020/lake_tags.blt',
              }
 
 
@@ -96,6 +97,8 @@ def get_limits(feature_parameter, tags):
 
     ## Assign appropriate limits if it's a complicated limit...
     if feature_parameter in nps_mod.parameter_special_cols_dict:
+        if tags is None:
+            raise ValueError('tags must be assigned if there are special classes in the attribute.')
         tag_name = nps_mod.parameter_special_cols_dict[feature_parameter]
         tag = tags[tag_name]
         old_limits = copy(limits)

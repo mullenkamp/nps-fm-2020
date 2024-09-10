@@ -188,20 +188,20 @@ lake_chla_limits = {
 
 lake_tn_limits = {
     'A': {
-        True: (-1, 160),
-        False: (-1, 300),
+        'stratified': {'median': (-1, 160)},
+        'polymictic': {'median': (-1, 300)},
         },
     'B': {
-        True: (-1, 350),
-        False: (-1, 500),
+        'stratified': {'median': (-1, 350)},
+        'polymictic': {'median': (-1, 500)},
         },
     'C': {
-        True: (-1, 750),
-        False: (-1, 800),
+        'stratified': {'median': (-1, 750)},
+        'polymictic': {'median': (-1, 800)},
         },
     'D': {
-        True: (-1, 100000),
-        False: (-1, 100000),
+        'stratified': {'median': (-1, 100000)},
+        'polymictic': {'median': (-1, 100000)},
         }
     }
 
@@ -275,7 +275,7 @@ parameter_special_cols_dict = {
     ('river', 'Clarity'): 'ss_class',
     ('river', 'Dep Sediment'): 'ds_class',
     ('river', 'Chla'): 'peri_class',
-    # ('lake', 'Total nitrogen'): 'stratified',
+    ('lake', 'Total nitrogen'): 'stratified',
     }
 
 parameter_limits_dict = {
@@ -288,12 +288,12 @@ parameter_limits_dict = {
     ('river', 'DRP'): river_drp_limits,
     ('river', 'Dep Sediment'): river_dep_sed_limits,
     ('river', 'Fish IBI'): river_fish_limits,
-    # ('lake', 'Ammonia'): lake_ammonia_limits,
-    # ('lake', 'Cyano'): lake_cyano_limits,
-    # ('lake', 'Chla'): lake_chla_limits,
-    # ('lake', 'Total nitrogen'): lake_tn_limits,
-    # ('lake', 'Total phosphorus'): lake_tp_limits,
-    # ('lake', 'E.coli'): lake_ecoli_limits,
+    ('lake', 'Ammonia'): lake_ammonia_limits,
+    ('lake', 'Cyano'): lake_cyano_limits,
+    ('lake', 'Chla'): lake_chla_limits,
+    ('lake', 'Total nitrogen'): lake_tn_limits,
+    ('lake', 'Total phosphorus'): lake_tp_limits,
+    ('lake', 'E.coli'): lake_ecoli_limits,
     }
 
 

@@ -12,10 +12,10 @@ import pathlib
 ### REC parameters
 
 script_path = pathlib.Path(os.path.realpath(os.path.dirname(__file__)))
-input_data_path = script_path.parent.joinpath('input_data')
+data_path = script_path.parent.joinpath('data')
 
-if not input_data_path.is_dir():
-    raise ValueError(f'{input_data_path} does not exist')
+if not data_path.is_dir():
+    raise ValueError(f'{data_path} does not exist')
 
 
 
