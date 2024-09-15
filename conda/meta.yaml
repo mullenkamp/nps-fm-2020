@@ -41,7 +41,7 @@ requirements:
     - booklet >=0.5.2
     - pandas
     - smart_open[http]
-    - msgpack
+    - msgpack-python
 
 test:
   imports:
