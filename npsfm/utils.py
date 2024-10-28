@@ -58,7 +58,7 @@ def calc_stats(ts_data, limits):
     return stats
 
 
-def calc_band_from_limit(stats, limits, only_median=False):
+def calc_band_from_limit(stats, limits, include_stats=None):
     """
 
     """
@@ -66,13 +66,18 @@ def calc_band_from_limit(stats, limits, only_median=False):
 
     for band, limit in reversed(limits.items()):
         bool_list = []
-        if only_median:
-            if 'median' in limit:
-                min1, max1 = limit['median']
-                bool0 = (stats['median'] > min1) & (stats['median'] <= max1)
-                bool_list.append(bool0)
-            else:
-                raise ValueError('median not in limits.')
+        if isinstance(include_stats, (list, str)):
+            if isinstance(include_stats, str):
+                include_stats = [include_stats]
+            for stat in include_stats:
+                if stat in limit:
+                    min1, max1 = limit[stat]
+                    bool0 = (stats[stat] > min1) & (stats[stat] <= max1)
+                    bool_list.append(bool0)
+                else:
+                    raise ValueError(f'{stat} not in limits.')
+        elif include_stats is not None:
+            raise TypeError('include_stats must be either a str or a list of str.')
         else:
             for stat_name, minmax in limit.items():
                 min1, max1 = minmax
@@ -110,27 +115,31 @@ def get_limits(feature_parameter, tags):
     return limits
 
 
-def calc_improvement_to_band(stats, limits, band, only_median=False):
+def calc_improvement_to_band(stats, limits, band, include_stats=None):
     """
 
     """
-    current_band = calc_band_from_limit(stats, limits, only_median)
+    current_band = calc_band_from_limit(stats, limits, include_stats)
 
     if band >= current_band:
         results = {stat: 0 for stat in stats}
     else:
         band_limits = limits[band]
         results = {}
-        if only_median:
-            stat = 'median'
-            limit = band_limits[stat]
-            current_val = stats[stat]
-            if limit[0] == -1:
-                ratio = round(1 - limit[1]/current_val, 4)
-            else:
-                ratio = round(limit[0]/current_val - 1, 4)
-
-            results[stat] = ratio
+        if isinstance(include_stats, (list, str)):
+            if isinstance(include_stats, str):
+                include_stats = [include_stats]
+            for stat in include_stats:
+                limit = band_limits[stat]
+                current_val = stats[stat]
+                if limit[0] == -1:
+                    ratio = round(1 - limit[1]/current_val, 4)
+                else:
+                    ratio = round(limit[0]/current_val - 1, 4)
+    
+                results[stat] = ratio
+        elif include_stats is not None:
+            raise TypeError('include_stats must be either a str or a list of str.')
         else:
             for stat, limit in band_limits.items():
                 current_val = stats[stat]

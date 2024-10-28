@@ -163,32 +163,32 @@ class NPSFM:
         return self.stats
 
 
-    def calc_band(self, only_median=False):
+    def calc_band(self, include_stats=None):
         """
 
         """
-        result = utils.calc_band_from_limit(self.stats, self.limits, only_median)
+        result = utils.calc_band_from_limit(self.stats, self.limits, include_stats)
 
         return result
 
 
-    def calc_improvement_to_band(self, band, only_median=False):
+    def calc_improvement_to_band(self, band, include_stats=None):
         """
 
         """
         if band not in self.limits:
             raise ValueError(f'{band} not in the available bands: {list(self.limits.keys())}')
 
-        results = utils.calc_improvement_to_band(self.stats, self.limits, band, only_median)
+        results = utils.calc_improvement_to_band(self.stats, self.limits, band, include_stats)
 
         return results
 
 
-    def calc_improvement_to_bottom_line(self, only_median=False):
+    def calc_improvement_to_bottom_line(self, include_stats=None):
         """
 
         """
-        results = utils.calc_improvement_to_band(self.stats, self.limits, self.bottom_line_limit_band, only_median)
+        results = utils.calc_improvement_to_band(self.stats, self.limits, self.bottom_line_limit_band, include_stats)
 
         return results
 

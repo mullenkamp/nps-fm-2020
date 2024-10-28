@@ -52,15 +52,15 @@ stats = self.add_stats(ts_data)
 
 
 def test_calc_band():
-    attr_band = self.calc_band(only_median=True)
-    attr_band = self.calc_band(only_median=False)
+    attr_band = self.calc_band(include_stats=['median'])
+    attr_band = self.calc_band(include_stats=None)
 
     assert attr_band == 'C'
 
 
 def test_calc_improvement_to_band():
-    improve_ratio1 = self.calc_improvement_to_band(hopeful_band, only_median=True)
-    improve_ratio2 = self.calc_improvement_to_bottom_line(only_median=True)
+    improve_ratio1 = self.calc_improvement_to_band(hopeful_band, include_stats=['median'])
+    improve_ratio2 = self.calc_improvement_to_bottom_line(include_stats=['median'])
 
     improve_ratio1 = self.calc_improvement_to_band(hopeful_band)
     improve_ratio2 = self.calc_improvement_to_bottom_line()
