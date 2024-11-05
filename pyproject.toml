@@ -1,7 +1,7 @@
 [project]
 name = "npsfm"
 authors = [
-  { name = "npsfm", email = "mullenkamp1@gmail.com" }
+  { name = "Mike", email = "mullenkamp1@gmail.com" }
 ]
 description = "Python package to estimate the grades for the nps-fm-2020"
 readme = "README.md"
@@ -10,7 +10,7 @@ classifiers = [
     "Programming Language :: Python :: 3 :: Only",
 ]
 requires-python = ">=3.10"
-dependencies = ['booklet>=0.5.2', 'pandas', 'smart_open[http]', 'msgpack'
+dependencies = ['booklet>=0.5.2', 'pandas', 'urllib3>=2', 'msgpack'
 ]
 
 # [tool.ruff]

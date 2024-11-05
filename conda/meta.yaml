@@ -1,6 +1,6 @@
 {% set name = "npsfm" %}
 {% set package_name = "npsfm" %}
-{% set version = "0.1.9" %}
+{% set version = "0.1.12" %}
 # {% set sha256 = "72a156e328247c91cb7f5440ffa98069c0090892f8d9d07fd57e36c0611a0403" %}
 
 # sha256 is the prefered checksum -- you can get it for a file with:
@@ -40,7 +40,7 @@ requirements:
     - python >=3.10
     - booklet >=0.5.2
     - pandas
-    - smart_open[http]
+    - urllib3 >=2
     - msgpack-python
 
 test:

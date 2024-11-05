@@ -6,8 +6,10 @@ import os
 import io
 import numpy as np
 import pathlib
-import smart_open
-import smart_open.http as so_http
+# import smart_open
+# import smart_open.http as so_http
+import urllib3
+from urllib3.util import Retry, Timeout
 from time import sleep
 import concurrent.futures
 # import importlib
@@ -16,7 +18,7 @@ from copy import copy
 from . import v202401
 # import v202401
 
-so_http.DEFAULT_BUFFER_SIZE = 524288
+# so_http.DEFAULT_BUFFER_SIZE = 524288
 
 #########################################
 ### parameters
@@ -29,6 +31,33 @@ file_dict = {
 
 ########################################
 ### Functions
+
+
+def session(max_pool_connections: int = 10, max_attempts: int=3, timeout: int=120):
+    """
+    Function to setup a urllib3 pool manager for url downloads.
+
+    Parameters
+    ----------
+    max_pool_connections : int
+        The number of simultaneous connections for the S3 connection.
+    max_attempts: int
+        The number of retries if the connection fails.
+    timeout: int
+        The timeout in seconds.
+
+    Returns
+    -------
+    Pool Manager object
+    """
+    timeout = urllib3.util.Timeout(timeout)
+    retries = Retry(
+        total=max_attempts,
+        backoff_factor=1,
+        )
+    http = urllib3.PoolManager(num_pools=max_pool_connections, timeout=timeout, retries=retries)
+
+    return http
 
 
 def calc_stat(ts_data, stat, percentile_method='hazen'):
@@ -153,7 +182,7 @@ def calc_improvement_to_band(stats, limits, band, include_stats=None):
     return results
 
 
-def url_to_file(url, file_path, chunk_size: int=524288, retries=3):
+def url_to_file(http_session, url, file_path, chunk_size: int=524288):
     """
     General function to get an object from an S3 bucket. One of s3, connection_config, or public_url must be used.
 
@@ -169,33 +198,29 @@ def url_to_file(url, file_path, chunk_size: int=524288, retries=3):
     file object
         file object of the S3 object.
     """
-    transport_params = {'buffer_size': chunk_size, 'timeout': 120}
-
     ## Get the object
-    counter = retries
+    counter = 0
     while True:
         try:
-            file_obj = smart_open.open(url, 'rb', transport_params=transport_params, compression='disable')
+            resp = http_session.request('get', url, preload_content=False)
+            if (resp.status // 100) != 2:
+                raise urllib3.exceptions.HTTPError(resp.data)
+        
             file_path1 = pathlib.Path(file_path)
             file_path1.parent.mkdir(parents=True, exist_ok=True)
-
+        
             with open(file_path1, 'wb') as f:
-                chunk = file_obj.read(chunk_size)
+                chunk = resp.read(chunk_size)
                 while chunk:
                     f.write(chunk)
-                    chunk = file_obj.read(chunk_size)
+                    chunk = resp.read(chunk_size)
             break
-        except Exception as err:
-            counter = counter - 1
-            if counter > 0:
-                sleep(3)
-            else:
-                print('smart_open could not open url with the following error:')
-                print(err)
-                file_obj = None
-                break
+        except urllib3.exceptions.ProtocolError as err:
+            counter += 1
+            if counter == 3:
+                raise err
 
-    return file_obj
+    return file_path1
 
 
 def check_files(data_path):
@@ -222,13 +247,15 @@ def download_files(data_path, only_missing=True):
     else:
         urls = list(file_dict.values())
 
+    http_session = session()
+
     print('Downloading: {}'.format(', '.join([os.path.split(url)[-1] for url in urls])))
     with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
         futures = []
         for url in urls:
             file_name = os.path.split(url)[-1]
             new_path = os.path.join(data_path, file_name)
-            f = executor.submit(url_to_file, url, new_path)
+            f = executor.submit(url_to_file, http_session, url, new_path)
             futures.append(f)
         _ = concurrent.futures.wait(futures)
 
