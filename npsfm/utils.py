@@ -14,6 +14,7 @@ from time import sleep
 import concurrent.futures
 # import importlib
 from copy import copy
+import pandas as pd
 
 from . import v202401
 # import v202401
@@ -260,5 +261,34 @@ def download_files(data_path, only_missing=True):
         _ = concurrent.futures.wait(futures)
 
 
+def dtl_correction(data, site_col='site_id', dtl_method='trend'):
+    """
+    The method to use to convert values below a detection limit to numeric. Used for water quality results. Options are 'half' or 'trend'. 'half' simply halves the detection limit value, while 'trend' uses half the highest detection limit across the results when more than 40% of the values are below the detection limit. Otherwise it uses half the detection limit.
 
+    site_id can be assigned, but the other columns must include parameter, censor_code, and value. censor_code must include greater_than, less_than, and another value (anything) that represents no censor.
+    """
+    new_data_list = []
+    append = new_data_list.append
+    for i, df in data.groupby([site_col, 'parameter']):
+        if df.censor_code.isin(['greater_than', 'less_than']).any():
+            greater1 = df.censor_code == 'greater_than'
+            df.loc[greater1, 'value'] = df.loc[greater1, 'value'] * 1.5
+
+            less1 = df.censor_code == 'less_than'
+            if less1.sum() > 0:
+                df.loc[less1, 'value'] = df.loc[less1, 'value'] * 0.5
+                if dtl_method == 'trend':
+                    df1 = df.loc[less1]
+                    count1 = len(df)
+                    count_dtl = len(df1)
+                    dtl_ratio = np.round(count_dtl / float(count1), 2)
+                    if dtl_ratio >= 0.4:
+                        dtl_val = df1['value'].max()
+                        df.loc[(df['value'] < dtl_val) | less1, 'value'] = dtl_val
+
+        append(df)
+
+    new_data = pd.concat(new_data_list)
+
+    return new_data
 
