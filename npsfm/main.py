@@ -152,13 +152,15 @@ class NPSFM:
         ## Checks
         if not hasattr(self, 'limits'):
             raise ValueError('You must run the add_limits method first.')
-        if not isinstance(ts_data, pd.Series):
-            raise TypeError('ts_data must be a pandas Series with a datetime index.')
-        if not isinstance(ts_data.index, pd.DatetimeIndex):
-            raise TypeError('ts_data must be a pandas Series with a datetime index.')
+        # if not isinstance(ts_data, pd.Series):
+        #     raise TypeError('ts_data must be a pandas Series with a datetime index.')
+        # if not isinstance(ts_data.index, pd.DatetimeIndex):
+        #     raise TypeError('ts_data must be a pandas Series with a datetime index.')
+        if not isinstance(ts_data, (pd.Series, np.ndarray, list, tuple)):
+            raise TypeError('ts_data must be a pandas Series, an ndarray, a list, or a tuple.')
 
         ## Determine the stats
-        self.stats = utils.calc_stats(ts_data, self.limits)
+        self.stats = utils.calc_stats(np.asarray(ts_data), self.limits)
 
         return self.stats
 

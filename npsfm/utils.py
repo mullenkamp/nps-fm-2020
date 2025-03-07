@@ -66,15 +66,15 @@ def calc_stat(ts_data, stat, percentile_method='hazen'):
 
     """
     if stat == 'median':
-        value = ts_data.median()
+        value = np.median(ts_data)
     elif stat == 'max':
-        value = ts_data.max()
+        value = np.max(ts_data)
     elif 'Q' in stat:
         percentile = int(stat[1:])
         value = np.percentile(ts_data, percentile, method=percentile_method)
     elif 'G' in stat:
         conc = int(stat[1:])
-        value = (ts_data > conc).sum()
+        value = np.sum(ts_data > conc)/len(ts_data)
 
     return value
 
@@ -166,7 +166,7 @@ def calc_improvement_to_band(stats, limits, band, include_stats=None):
                     ratio = round(1 - limit[1]/current_val, 4)
                 else:
                     ratio = round(limit[0]/current_val - 1, 4)
-    
+
                 results[stat] = ratio
         elif include_stats is not None:
             raise TypeError('include_stats must be either a str or a list of str.')
@@ -206,10 +206,10 @@ def url_to_file(http_session, url, file_path, chunk_size: int=524288):
             resp = http_session.request('get', url, preload_content=False)
             if (resp.status // 100) != 2:
                 raise urllib3.exceptions.HTTPError(resp.data)
-        
+
             file_path1 = pathlib.Path(file_path)
             file_path1.parent.mkdir(parents=True, exist_ok=True)
-        
+
             with open(file_path1, 'wb') as f:
                 chunk = resp.read(chunk_size)
                 while chunk:
