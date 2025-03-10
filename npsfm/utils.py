@@ -74,7 +74,11 @@ def calc_stat(ts_data, stat, percentile_method='hazen'):
         value = np.percentile(ts_data, percentile, method=percentile_method)
     elif 'G' in stat:
         conc = int(stat[1:])
-        value = np.sum(ts_data > conc)/len(ts_data)
+        value = round(np.sum(ts_data > conc)/len(ts_data), 3)
+    elif stat == 'mean':
+        value = np.mean(ts_data)
+    else:
+        raise ValueError(f'No function for stat:{stat}')
 
     return value
 
