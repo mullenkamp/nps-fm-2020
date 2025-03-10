@@ -69,10 +69,10 @@ river_ecoli_limits = {
                   }
 
 river_mci_limits = {
-                'A': {'mean': (130, 100000)},
-                'B': {'mean': (110, 100000)},
-                'C': {'mean': (90, 100000)},
-                'D': {'mean': (-1, 100000)}
+                'A': {'median': (130, 100000)},
+                'B': {'median': (110, 100000)},
+                'C': {'median': (90, 100000)},
+                'D': {'median': (-1, 100000)}
                 }
 
 river_drp_limits = {
